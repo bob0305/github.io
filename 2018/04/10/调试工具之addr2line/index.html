@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+  
+  
+    
+    
+  <script src="/github.io/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/github.io/lib/pace/pace-theme-minimal.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/github.io/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/github.io/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/github.io/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/github.io/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/github.io/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/github.io/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/github.io/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="调试工具之addr2lineaddr2line 工具从名字上就可以直观看出来是将某个地址转换为行数的工具。具体是什么地址呢？行数又是什么行数呢？下面细讲 地址我们知道编辑好的c语言文件是要通过编译工具转换成机器码才可以被计算机执行的。看过汇编的都知道，可执行文件中每条机器指令都对应一个地址。而这个地址就是这个addr2line工具的输入。 行数这个工具的输出结果为某个源代码文件的第几行。对于缩小问">
+<meta property="og:type" content="article">
+<meta property="og:title" content="调试工具之addr2line">
+<meta property="og:url" content="https://bob0305.github.io/github.io/2018/04/10/调试工具之addr2line/index.html">
+<meta property="og:site_name" content="小池塘">
+<meta property="og:description" content="调试工具之addr2lineaddr2line 工具从名字上就可以直观看出来是将某个地址转换为行数的工具。具体是什么地址呢？行数又是什么行数呢？下面细讲 地址我们知道编辑好的c语言文件是要通过编译工具转换成机器码才可以被计算机执行的。看过汇编的都知道，可执行文件中每条机器指令都对应一个地址。而这个地址就是这个addr2line工具的输入。 行数这个工具的输出结果为某个源代码文件的第几行。对于缩小问">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2018-04-09T16:28:23.758Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="调试工具之addr2line">
+<meta name="twitter:description" content="调试工具之addr2lineaddr2line 工具从名字上就可以直观看出来是将某个地址转换为行数的工具。具体是什么地址呢？行数又是什么行数呢？下面细讲 地址我们知道编辑好的c语言文件是要通过编译工具转换成机器码才可以被计算机执行的。看过汇编的都知道，可执行文件中每条机器指令都对应一个地址。而这个地址就是这个addr2line工具的输入。 行数这个工具的输出结果为某个源代码文件的第几行。对于缩小问">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/github.io/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":true,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://bob0305.github.io/github.io/2018/04/10/调试工具之addr2line/"/>
+
+
+
+
+
+  <title>调试工具之addr2line | 小池塘</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/github.io/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">小池塘</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">点滴之水，汇聚江河</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/github.io/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/github.io/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/github.io/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/github.io/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://bob0305.github.io/github.io/github.io/2018/04/10/调试工具之addr2line/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="张波波">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/github.io/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="小池塘">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">调试工具之addr2line</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-04-10T00:26:10+08:00">
+                2018-04-10
+              </time>
+            
+
+            
+              <span class="post-meta-divider">|</span>
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-check-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">更新于&#58;</span>
+              
+              <time title="更新于" itemprop="dateModified" datetime="2018-04-10T00:28:23+08:00">
+                2018-04-10
+              </time>
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/github.io/categories/调试工具/" itemprop="url" rel="index">
+                    <span itemprop="name">调试工具</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  623 字
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  3 分钟
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="调试工具之addr2line"><a href="#调试工具之addr2line" class="headerlink" title="调试工具之addr2line"></a>调试工具之addr2line</h1><p>addr2line 工具从名字上就可以直观看出来是将某个地址转换为行数的工具。具体是什么地址呢？行数又是什么行数呢？<br>下面细讲</p>
+<h2 id="地址"><a href="#地址" class="headerlink" title="地址"></a>地址</h2><p>我们知道编辑好的c语言文件是要通过编译工具转换成机器码才可以被计算机执行的。看过汇编的都知道，可执行文件中每条机器指令都对应一个地址。而这个地址就是这个addr2line工具的输入。</p>
+<h2 id="行数"><a href="#行数" class="headerlink" title="行数"></a>行数</h2><p>这个工具的输出结果为某个源代码文件的第几行。对于缩小问题排查范围非常用哦。</p>
+<h2 id="举例说明"><a href="#举例说明" class="headerlink" title="举例说明"></a>举例说明</h2><p>假设我们有一段简单的代码如下：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;string.h&gt;</span></span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">int</span>* p = <span class="literal">NULL</span>;</span><br><span class="line">	*p = <span class="number">5</span>;</span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>编译<br><code>gcc -o test -g main.c</code><br>执行<br><code>./test</code><br>查看错误信息<br><code>dmesg</code><br>定位到：<br><code>[ 2662.902462] test[6509]: segfault at 0 ip 00000000004004e6 sp 00007ffde45ed5b0 error 6 in test[400000+1000]</code><br>知道出错的地址之后使用下面命令查看代码行数和函数名<br><code>addr2line -e test 4004e6 -f</code><br>输出结果为：<br><code>main</code><br><code>/home/zhangbobo/work/addr2line/main.c:7</code></p>
+<h2 id="常用选项"><a href="#常用选项" class="headerlink" title="常用选项"></a>常用选项</h2><p>addr2line命令的使用方法如下<br><figure class="highlight vim"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">Usage: addr2line [option(s)] [addr(s)]</span><br><span class="line">Convert addresses into <span class="built_in">line</span> <span class="keyword">number</span>/<span class="keyword">file</span> name pairs.</span><br><span class="line">If <span class="keyword">no</span> addresses are specified <span class="keyword">on</span> the <span class="keyword">command</span> <span class="built_in">line</span>, they will <span class="keyword">be</span> <span class="keyword">read</span> from stdin</span><br><span class="line">The <span class="keyword">options</span> are:</span><br><span class="line">@<span class="symbol">&lt;file&gt;</span>                Read <span class="keyword">options</span> from <span class="symbol">&lt;file&gt;</span></span><br><span class="line">-<span class="keyword">a</span> --addresses         Show addresses</span><br><span class="line">-<span class="keyword">b</span> --target=<span class="symbol">&lt;bfdname&gt;</span>  Set the binary <span class="keyword">file</span> format</span><br><span class="line">-<span class="keyword">e</span> --<span class="keyword">exe</span>=<span class="symbol">&lt;executable&gt;</span>  Set the <span class="built_in">input</span> <span class="keyword">file</span> name (default <span class="keyword">is</span> <span class="keyword">a</span>.out)</span><br><span class="line">-i --inlines           Unwind inlined functions</span><br><span class="line">-<span class="keyword">j</span> --section=<span class="symbol">&lt;name&gt;</span>    Read section-relative offsets instead of addresses</span><br><span class="line">-<span class="keyword">p</span> --pretty-<span class="keyword">print</span>      Make the output easier <span class="keyword">to</span> <span class="keyword">read</span> <span class="keyword">for</span> humans</span><br><span class="line">-s --basenames         Strip directory names</span><br><span class="line">-<span class="keyword">f</span> --functions         Show <span class="function"><span class="keyword">function</span> <span class="title">names</span></span></span><br><span class="line">-C --demangle[=style]  Demangle <span class="function"><span class="keyword">function</span> <span class="title">names</span></span></span><br><span class="line">-h --<span class="keyword">help</span>              Display this information</span><br><span class="line">-v --<span class="keyword">version</span>           Display the program<span class="string">'s version</span></span><br></pre></td></tr></table></figure></p>
+<h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><p>大概的理解是编译程序的时候如果打开 -g选项，那么生成的elf可执行文件里面就会增加很多调试使用的段，这些信息会提供代码行和机器码之间的对应关系。通过这个对应关系add2line就可以找到对应的行。但是如果使用strip -d 命令去除了调试段信息，即使addr2line也无能为力了。<br>readelf  –sections  a.out可以看具体有哪些调试信息段<br>readelf -wl a.out 可以看段的具体内容。</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><blockquote>
+<p><a href="https://blog.csdn.net/whz_zb/article/details/7604760" target="_blank" rel="noopener">https://blog.csdn.net/whz_zb/article/details/7604760</a><br><a href="https://sourceware.org/binutils/docs/binutils/addr2line.html" target="_blank" rel="noopener">https://sourceware.org/binutils/docs/binutils/addr2line.html</a><br><a href="http://www.cnblogs.com/my_life/articles/4118848.html" target="_blank" rel="noopener">http://www.cnblogs.com/my_life/articles/4118848.html</a><br><a href="https://blog.csdn.net/lhf_tiger/article/details/9088609" target="_blank" rel="noopener">https://blog.csdn.net/lhf_tiger/article/details/9088609</a></p>
+</blockquote>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/github.io/2018/04/07/2018给自己定一个小目标/" rel="next" title="2018给自己定一个小目标">
+                <i class="fa fa-chevron-left"></i> 2018给自己定一个小目标
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/github.io/2018/04/15/编译工具之ldd/" rel="prev" title="编译工具之ldd">
+                编译工具之ldd <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/github.io/images/avatar.gif"
+                alt="张波波" />
+            
+              <p class="site-author-name" itemprop="name">张波波</p>
+              <p class="site-description motion-element" itemprop="description">欢迎,欢迎,随便冒个泡吧.</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/github.io/archives/">
+              
+                  <span class="site-state-item-count">7</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/github.io/categories/index.html">
+                  <span class="site-state-item-count">7</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/github.io/tags/index.html">
+                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/bob0305" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:zhangbo91@foxmail.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://www.zhihu.com/people/zhang-hao-hao-58" target="_blank" title="知乎">
+                      
+                        <i class="fa fa-fw fa-globe"></i>知乎</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://hexo.io/zh-cn/" title="Hexo" target="_blank">Hexo</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://theme-next.iissnan.com/" title="Next" target="_blank">Next</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#调试工具之addr2line"><span class="nav-number">1.</span> <span class="nav-text">调试工具之addr2line</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#地址"><span class="nav-number">1.1.</span> <span class="nav-text">地址</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#行数"><span class="nav-number">1.2.</span> <span class="nav-text">行数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#举例说明"><span class="nav-number">1.3.</span> <span class="nav-text">举例说明</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#常用选项"><span class="nav-number">1.4.</span> <span class="nav-text">常用选项</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#原理"><span class="nav-number">1.5.</span> <span class="nav-text">原理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考"><span class="nav-number">1.6.</span> <span class="nav-text">参考</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">张波波</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+      <span class="post-meta-item-text">Site words total count&#58;</span>
+    
+    <span title="Site words total count">16.8k</span>
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/github.io/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/github.io/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/github.io/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/github.io/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/github.io/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/github.io/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/github.io/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/github.io/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/github.io/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/github.io/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/github.io/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/github.io/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/github.io/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

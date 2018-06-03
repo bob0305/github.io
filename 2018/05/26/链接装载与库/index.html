@@ -1,0 +1,950 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+  
+  
+    
+    
+  <script src="/github.io/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/github.io/lib/pace/pace-theme-minimal.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/github.io/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/github.io/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/github.io/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/github.io/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/github.io/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/github.io/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/github.io/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="编译," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="《程序员的自我修养—链接装载与库》读书笔记这本书说起来应该是读第二遍了，因为上次读的粗略，而且也没有亲手操作，所以过后很快就忘记了。最近忙里偷闲，再拿起书本翻一下，这次的目的非常明确，就是整理整个读书过程中遇到的认为值得记录下来的内容，形成一个笔记，随时回来温故。既然是通读，所以就不能任性了。安安静静从第一页开始看起来。 第1章 温故知新看介绍作者也是理工男，所以思维简单粗暴，直接从问题引出本书的">
+<meta name="keywords" content="编译">
+<meta property="og:type" content="article">
+<meta property="og:title" content="链接装载与库">
+<meta property="og:url" content="https://bob0305.github.io/github.io/2018/05/26/链接装载与库/index.html">
+<meta property="og:site_name" content="小池塘">
+<meta property="og:description" content="《程序员的自我修养—链接装载与库》读书笔记这本书说起来应该是读第二遍了，因为上次读的粗略，而且也没有亲手操作，所以过后很快就忘记了。最近忙里偷闲，再拿起书本翻一下，这次的目的非常明确，就是整理整个读书过程中遇到的认为值得记录下来的内容，形成一个笔记，随时回来温故。既然是通读，所以就不能任性了。安安静静从第一页开始看起来。 第1章 温故知新看介绍作者也是理工男，所以思维简单粗暴，直接从问题引出本书的">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2018-06-03T08:33:15.252Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="链接装载与库">
+<meta name="twitter:description" content="《程序员的自我修养—链接装载与库》读书笔记这本书说起来应该是读第二遍了，因为上次读的粗略，而且也没有亲手操作，所以过后很快就忘记了。最近忙里偷闲，再拿起书本翻一下，这次的目的非常明确，就是整理整个读书过程中遇到的认为值得记录下来的内容，形成一个笔记，随时回来温故。既然是通读，所以就不能任性了。安安静静从第一页开始看起来。 第1章 温故知新看介绍作者也是理工男，所以思维简单粗暴，直接从问题引出本书的">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/github.io/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":true,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://bob0305.github.io/github.io/2018/05/26/链接装载与库/"/>
+
+
+
+
+
+  <title>链接装载与库 | 小池塘</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/github.io/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">小池塘</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">点滴之水，汇聚江河</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/github.io/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/github.io/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/github.io/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/github.io/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://bob0305.github.io/github.io/github.io/2018/05/26/链接装载与库/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="张波波">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/github.io/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="小池塘">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">链接装载与库</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-05-26T14:13:53+08:00">
+                2018-05-26
+              </time>
+            
+
+            
+              <span class="post-meta-divider">|</span>
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-check-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">更新于&#58;</span>
+              
+              <time title="更新于" itemprop="dateModified" datetime="2018-06-03T16:33:15+08:00">
+                2018-06-03
+              </time>
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/github.io/categories/编程/" itemprop="url" rel="index">
+                    <span itemprop="name">编程</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  4,949 字
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  20 分钟
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="《程序员的自我修养—链接装载与库》读书笔记"><a href="#《程序员的自我修养—链接装载与库》读书笔记" class="headerlink" title="《程序员的自我修养—链接装载与库》读书笔记"></a>《程序员的自我修养—链接装载与库》读书笔记</h1><p>这本书说起来应该是读第二遍了，因为上次读的粗略，而且也没有亲手操作，所以过后很快就忘记了。最近忙里偷闲，再拿起书本翻一下，这次的目的非常明确，就是整理整个读书过程中遇到的认为值得记录下来的内容，形成一个笔记，随时回来温故。<br>既然是通读，所以就不能任性了。安安静静从第一页开始看起来。</p>
+<h2 id="第1章-温故知新"><a href="#第1章-温故知新" class="headerlink" title="第1章 温故知新"></a>第1章 温故知新</h2><p>看介绍作者也是理工男，所以思维简单粗暴，直接从问题引出本书的内容。<br>针对hello world问题的追问？私以为这些问题可以用来区分一个编程人员的技术敏感度</p>
+<ul>
+<li>程序为什么要被编译器编译之后才可以运行？</li>
+<li>编译器在把C语言转换成可以执行的机器码的过程中做了什么？怎么做的?</li>
+<li>最后编译出来的可执行文件里面是什么？除了机器码还有什么？它们是怎么存放的？怎么组织的？</li>
+<li>#include&lt;stdio.h&gt;是什么意思？把stdio.h包含进来意味着什么？C语言库又是什么？它是怎么实现的？</li>
+<li>不同的编译器和不同的硬件平台，以及不同的操作系统，最终编译出来的结果一样吗？为什么？</li>
+<li>hello world程序是怎么运行起来的？操作系统怎么装载它的？它从哪里开始执行?到哪结束？main函数之前发生了什么？main函数结束之后又发生了什么？</li>
+<li>如果没有操作系统，hello world可以运行吗？如果要在一台没有操作系统的机器上运行hello world需要什么？应该怎么实现？</li>
+<li>printf是怎么实现的？他为什么可以有不定数量的参数？为什么它能够在终端上输出字符串？</li>
+<li>hello world程序在运行时，在内存中是什么样子的？</li>
+</ul>
+<p>以上问题用来检验自己是否需要继续读下去？^_^，肯定是读下去啊。</p>
+<h3 id="现代计算机的核心结构"><a href="#现代计算机的核心结构" class="headerlink" title="现代计算机的核心结构"></a>现代计算机的核心结构</h3><p>CPU + 内存 + IO控制芯片</p>
+<h3 id="目前计算机现状"><a href="#目前计算机现状" class="headerlink" title="目前计算机现状"></a>目前计算机现状</h3><p>由于物理限制，频率不能无限提升，于是CPU的速度提升又换了个方向：多核。<br><strong>此处给自己挖个坑：（为什么4Ghz是天花板，而不是10Ghz或者20Ghz？）</strong><br>推荐阅读：free lunch is over</p>
+<h3 id="操作系统"><a href="#操作系统" class="headerlink" title="操作系统"></a>操作系统</h3><p>多道程序—分时系统—抢占式多任务系统。</p>
+<h3 id="设备驱动"><a href="#设备驱动" class="headerlink" title="设备驱动"></a>设备驱动</h3><h3 id="虚拟地址-amp-分页"><a href="#虚拟地址-amp-分页" class="headerlink" title="虚拟地址&amp;分页"></a>虚拟地址&amp;分页</h3><p>以上三种分别完成了CPU资源、硬件资源、内存资源的抽象和复用。方法都是类似的，屏蔽底层实现细节。对外提供抽象后的资源。</p>
+<h3 id="线程"><a href="#线程" class="headerlink" title="线程"></a>线程</h3><p>轻量级进程。<br>IO密集型线程、CPU密集型线程。</p>
+<h4 id="线程安全"><a href="#线程安全" class="headerlink" title="线程安全"></a>线程安全</h4><p>竞争和原子操作：单指令的操作为原子的，因为无论如何，单条指令的执行是不会被打断的。<br>同步与锁：信号量、互斥量、临界区、读写锁、条件变量。<br>可重入与线程安全<br>可重入的情况：多个线程同时执行一个函数或者函数自身调用自身。<br>可重入函数必须具备的特点：</p>
+<ul>
+<li>不使用任何（局部）静态或者全局的非const变量。</li>
+<li>不返回任何（局部）静态或全局的非const变量的指针。</li>
+<li>仅依赖与调用方提供的参数。</li>
+<li>不依赖任何单个资源的锁</li>
+<li>不调用任何不可重入的函数。</li>
+</ul>
+<p>过度优化：注意即使编程时合理使用了锁，也不一定能够保证线程安全。原因是编译器的过度优化和CPU的动态调度换序。<br>使用volatile关键字可以1)阻止编译器为了提供速度将一个变量缓存到寄存器内而不写回。2）阻止编译器调整操作volatile变量的指令顺序。<br>可以解决编译器的过度优化问题，但是无法阻止CPU的动态调用换序。<br>阻止CPU动态调度换序的方案是使用CPU提供barrier指令，不同的CPU名称各不相同。</p>
+<h4 id="多线程模型"><a href="#多线程模型" class="headerlink" title="多线程模型"></a>多线程模型</h4><p>一对一线程模型、多对一模型、多对多模型（多映射到少）。</p>
+<h3 id="写在本章最后"><a href="#写在本章最后" class="headerlink" title="写在本章最后"></a>写在本章最后</h3><p>本章温故，内容看似不多，也比较杂乱，但是还是体现出作者的知识积累。关于<strong>线程安全的知识此处挖坑</strong>，后面补上。</p>
+<h2 id="第2章-静态链接"><a href="#第2章-静态链接" class="headerlink" title="第2章 静态链接"></a>第2章 静态链接</h2><h3 id="被隐藏的过程"><a href="#被隐藏的过程" class="headerlink" title="被隐藏的过程"></a>被隐藏的过程</h3><p>现在的集成环境屏蔽了很多处理过程。这些处理过程的理解对于解决开发过程中遇到的问题尤其重要。<br><strong>预处理（prepressing）、编译(compilation)、汇编（assembly）、链接（linking）</strong><br>预编译主要处理源文件中以#开始的预编译指令。例如#include #define等。</p>
+<ul>
+<li>将原来的#define 删除，并且展开所有的宏定义。</li>
+<li>处理所有的条件预编译指令。#if #ifdef #elif #else #endif等等等。</li>
+<li>处理#include，将被包含的文件插入到该预编译指令的位置。</li>
+<li>删除所有的注释</li>
+<li>添加行号和文件名表示。便于编译时产生调试用的行号信息。</li>
+<li>保留所有的#pragma编译器指令，因为后面编译器需要使用。</li>
+</ul>
+<p>预编译后的文件一般是.i 或者.ii<br>编译参数为：<br><figure class="highlight plain"><figcaption><span>-E hello.c -o hello.i```</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">对于无法判断的宏定义是否正确，可以在此步骤查看确认。</span><br><span class="line">### 编译 ###</span><br><span class="line">编译过程就是把预处理完的文件进行词法分析、语法分析、优化等等操作后生成汇编代码文件。</span><br><span class="line">编译参数：(衔接上一步)</span><br><span class="line">```gcc -S hello.i -o hello.s</span><br></pre></td></tr></table></figure></p>
+<p>或者直接<br><figure class="highlight plain"><figcaption><span>-S hello.c -o hello.s```</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">### 汇编 ###</span><br><span class="line">汇编器是将汇编代码转变成可以执行的指令。每一条汇编语句几乎都对应一条机器指令。汇编器 as</span><br><span class="line">编译参数：</span><br><span class="line">```gcc -c hello.s -o hello.o</span><br></pre></td></tr></table></figure></p>
+<h3 id="链接"><a href="#链接" class="headerlink" title="链接"></a>链接</h3><p>将编译产生的机器代码链接成为可执行文件。</p>
+<h3 id="继续探究：编译器具体对代码文件做了什么"><a href="#继续探究：编译器具体对代码文件做了什么" class="headerlink" title="继续探究：编译器具体对代码文件做了什么"></a>继续探究：编译器具体对代码文件做了什么</h3><h4 id="词法分析"><a href="#词法分析" class="headerlink" title="词法分析"></a>词法分析</h4><p>通过一个扫描器 lex 将代码分成几个：关键字、标识符、字面量、特殊符号。</p>
+<h4 id="语法分析"><a href="#语法分析" class="headerlink" title="语法分析"></a>语法分析</h4><p>对扫描器产生的记号进行语法分析，从而产生语法树。（上下文无关语法以及下推自动机）。工具名：yacc</p>
+<h4 id="语义分析"><a href="#语义分析" class="headerlink" title="语义分析"></a>语义分析</h4><p>声明和类型的匹配，类型的转换。</p>
+<h4 id="中间语言生成"><a href="#中间语言生成" class="headerlink" title="中间语言生成"></a>中间语言生成</h4><p>进行源代码级别的优化。</p>
+<h4 id="目标代码生成与优化"><a href="#目标代码生成与优化" class="headerlink" title="目标代码生成与优化"></a>目标代码生成与优化</h4><p>将中间代码转换成目标机器代码。</p>
+<h3 id="链接器"><a href="#链接器" class="headerlink" title="链接器"></a>链接器</h3><p>主要包括地址和空间分配、符合决议、重定位这些步骤。</p>
+<h3 id="写在本章最后-1"><a href="#写在本章最后-1" class="headerlink" title="写在本章最后"></a>写在本章最后</h3><p>回顾了从源代码到可执行文件的4大经典步骤。重点分析了为什么需要链接这一步：解决跨模块的函数和变量的地址重新调整定位的问题。</p>
+<h2 id="第3章-目标文件里有什么"><a href="#第3章-目标文件里有什么" class="headerlink" title="第3章 目标文件里有什么"></a>第3章 目标文件里有什么</h2><h3 id="目标文件的格式"><a href="#目标文件的格式" class="headerlink" title="目标文件的格式"></a>目标文件的格式</h3><p>window下为PE linux下为ELF。<br>ELF文件的格式有：</p>
+<ol>
+<li>可重定位文件。.o</li>
+<li>可执行文件。</li>
+<li>共享目标文件。.so</li>
+<li>核心转储文件。coredump</li>
+</ol>
+<p><strong>tips：可以使用file命令查看对应的文件格式。</strong></p>
+<h3 id="目标文件是什么样的"><a href="#目标文件是什么样的" class="headerlink" title="目标文件是什么样的"></a>目标文件是什么样的</h3><p>目标文件以“段”的形式组织。比如机器指令存放在代码段（.text或.code）全局变量和局部静态变量存放在数据段（.data）<br>具体的组织格式如下：</p>
+<ol>
+<li>文件头，描述整个文件的文件属性。包括是否可执行。静态还是动态链接以及入口地址、目标硬件、目标操作系统等。还包括一个段表。描述了各个段在文件中的偏移位置及段的属性。</li>
+<li>各个段的数据。代码段、数据段、bss段等等。</li>
+</ol>
+<h3 id="继续挖掘目标文件中每个段作用"><a href="#继续挖掘目标文件中每个段作用" class="headerlink" title="继续挖掘目标文件中每个段作用"></a>继续挖掘目标文件中每个段作用</h3><p>tips:可以使用objdump -h命令来分析.o 文件<br>tips：可以使用size命令查看elf文件的代码段、数据段、BSS段的长度</p>
+<h4 id="代码段"><a href="#代码段" class="headerlink" title="代码段"></a>代码段</h4><p>tips：可以使用objdump -s 命令将所有段的内容以十六进制形式打印出来。 -d 参数可以将所有包含指令的段反汇编。<br><strong>代码段存放的是机器指令</strong>。通过 objdump -s -d 命令可以很自然的看出来。</p>
+<h4 id="数据段和只读数据段"><a href="#数据段和只读数据段" class="headerlink" title="数据段和只读数据段"></a>数据段和只读数据段</h4><p>.data保存的是<strong>已经初始化了的</strong>全局静态变量和局部静态变量。<br>.rodata 保存一般是程序里面的只读变量和字符串变量。</p>
+<h4 id="BSS段"><a href="#BSS段" class="headerlink" title="BSS段"></a>BSS段</h4><p>存放的是<strong>未初始化的</strong>全局变量和局部静态变量。</p>
+<h4 id="其他常见段"><a href="#其他常见段" class="headerlink" title="其他常见段"></a>其他常见段</h4><p>.comment 存放编译器版本信息。<br>.debug 存放调试信息。<br>.dynamic 存放动态链接信息。<br>.line 存放调试时的行号表。<br>.shstrtab section string table 段名表。</p>
+<h3 id="ELF文件结构描述"><a href="#ELF文件结构描述" class="headerlink" title="ELF文件结构描述"></a>ELF文件结构描述</h3><p>总体结构从前向后分别为</p>
+<ol>
+<li>ELF 文件头。描述了整个文件的基本属性。</li>
+<li>.text</li>
+<li>.data</li>
+<li>.bss</li>
+<li>other sections</li>
+<li>Section header table段表。</li>
+</ol>
+<h4 id="ELF文件头"><a href="#ELF文件头" class="headerlink" title="ELF文件头"></a>ELF文件头</h4><p>可以使用readelf -h 目标文件名  来查看ELF文件的头部信息。请看下面的例子。<br>从中可以看出ELF 魔数、文件机器字节长度、数据存储方式、版本、运行平台、ABI版本、ELF重定位类型、硬件平台、硬件平台版本、入口地址、程序头入口和长度、段表的位置和长度以及段的数量等。<br>ELF文件头的定义可以与/usr/include/elf.h头文件中的Elf32_Ehdr和Elf64_Ehdr结构体一一对应。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">zhangbobo@ubuntu:~/work/helloworld$ readelf -h helloworld.o</span><br><span class="line">ELF Header:</span><br><span class="line">  Magic:   <span class="number">7f</span> <span class="number">45</span> <span class="number">4</span>c <span class="number">46</span> <span class="number">02</span> <span class="number">01</span> <span class="number">01</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> </span><br><span class="line">  Class: ELF64</span><br><span class="line">  Data:  <span class="number">2'</span>s complement, little endian</span><br><span class="line">  Version:   <span class="number">1</span> (current)</span><br><span class="line">  OS/ABI:UNIX - System V</span><br><span class="line">  ABI Version:   <span class="number">0</span></span><br><span class="line">  Type:  REL (Relocatable file)</span><br><span class="line">  Machine:   Advanced Micro Devices X86<span class="number">-64</span></span><br><span class="line">  Version:   <span class="number">0x1</span></span><br><span class="line">  Entry point address:   <span class="number">0x0</span></span><br><span class="line">  Start of program headers:  <span class="number">0</span> (bytes into file)</span><br><span class="line">  Start of section headers:  <span class="number">848</span> (bytes into file)</span><br><span class="line">  Flags: <span class="number">0x0</span></span><br><span class="line">  Size of <span class="keyword">this</span> header:   <span class="number">64</span> (bytes)</span><br><span class="line">  Size of program headers:   <span class="number">0</span> (bytes)</span><br><span class="line">  Number of program headers: <span class="number">0</span></span><br><span class="line">  Size of section headers:   <span class="number">64</span> (bytes)</span><br><span class="line">  Number of section headers: <span class="number">13</span></span><br><span class="line">  Section header <span class="built_in">string</span> table index: <span class="number">10</span></span><br></pre></td></tr></table></figure>
+<h4 id="段表"><a href="#段表" class="headerlink" title="段表"></a>段表</h4><p>段表是除了ELF头部以外最重要的结构，它描述的是ELF的各个段的信息。比如每个段的段名、长度、在文件中的偏移、读写权限以及段的其他属性。<br>编译器、链接器和装载器都是依靠段表来定位和访问各个段的属性的。参考下面的例子。<br>段表的定义参考elf.h头文件中的结构体Elf32_Shdr（同样也有一个64位的版本Elf64_Shdr），其中比较常用的有段的类型(sh_type),段的标志位（sh_flag），段的链接信息（sh_link，sh_info）。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line">zhangbobo@ubuntu:~/work/helloworld$ readelf -S helloworld.o</span><br><span class="line">There are <span class="number">13</span> section headers, starting at offset <span class="number">0x350</span>:</span><br><span class="line"></span><br><span class="line">Section Headers:</span><br><span class="line">  [Nr] Name              Type             Address           Offset</span><br><span class="line">       Size              EntSize          Flags  Link  Info  Align</span><br><span class="line">  [ <span class="number">0</span>]                   <span class="literal">NULL</span>             <span class="number">0000000000000000</span>  <span class="number">00000000</span></span><br><span class="line">       <span class="number">0000000000000000</span>  <span class="number">0000000000000000</span>           <span class="number">0</span>     <span class="number">0</span>     <span class="number">0</span></span><br><span class="line">  [ <span class="number">1</span>] .text             PROGBITS         <span class="number">0000000000000000</span>  <span class="number">00000040</span></span><br><span class="line">       <span class="number">0000000000000015</span>  <span class="number">0000000000000000</span>  AX       <span class="number">0</span>     <span class="number">0</span>     <span class="number">1</span></span><br><span class="line">  [ <span class="number">2</span>] .rela.text        RELA             <span class="number">0000000000000000</span>  <span class="number">000002</span>a0</span><br><span class="line">       <span class="number">0000000000000030</span>  <span class="number">0000000000000018</span>   I      <span class="number">11</span>     <span class="number">1</span>     <span class="number">8</span></span><br><span class="line">  [ <span class="number">3</span>] .data             PROGBITS         <span class="number">0000000000000000</span>  <span class="number">00000058</span></span><br><span class="line">       <span class="number">0000000000000008</span>  <span class="number">0000000000000000</span>  WA       <span class="number">0</span>     <span class="number">0</span>     <span class="number">4</span></span><br><span class="line">  [ <span class="number">4</span>] .bss              NOBITS           <span class="number">0000000000000000</span>  <span class="number">00000060</span></span><br><span class="line">       <span class="number">0000000000000004</span>  <span class="number">0000000000000000</span>  WA       <span class="number">0</span>     <span class="number">0</span>     <span class="number">4</span></span><br><span class="line">  [ <span class="number">5</span>] .rodata           PROGBITS         <span class="number">0000000000000000</span>  <span class="number">00000060</span></span><br><span class="line">       <span class="number">000000000000000</span>c  <span class="number">0000000000000000</span>   A       <span class="number">0</span>     <span class="number">0</span>     <span class="number">1</span></span><br><span class="line">  [ <span class="number">6</span>] .comment          PROGBITS         <span class="number">0000000000000000</span>  <span class="number">0000006</span>c</span><br><span class="line">       <span class="number">0000000000000035</span>  <span class="number">0000000000000001</span>  MS       <span class="number">0</span>     <span class="number">0</span>     <span class="number">1</span></span><br><span class="line">  [ <span class="number">7</span>] .note.GNU-<span class="built_in">stack</span>   PROGBITS         <span class="number">0000000000000000</span>  <span class="number">000000</span>a1</span><br><span class="line">       <span class="number">0000000000000000</span>  <span class="number">0000000000000000</span>           <span class="number">0</span>     <span class="number">0</span>     <span class="number">1</span></span><br><span class="line">  [ <span class="number">8</span>] .eh_frame         PROGBITS         <span class="number">0000000000000000</span>  <span class="number">000000</span>a8</span><br><span class="line">       <span class="number">0000000000000038</span>  <span class="number">0000000000000000</span>   A       <span class="number">0</span>     <span class="number">0</span>     <span class="number">8</span></span><br><span class="line">  [ <span class="number">9</span>] .rela.eh_frame    RELA             <span class="number">0000000000000000</span>  <span class="number">000002</span>d0</span><br><span class="line">       <span class="number">0000000000000018</span>  <span class="number">0000000000000018</span>   I      <span class="number">11</span>     <span class="number">8</span>     <span class="number">8</span></span><br><span class="line">  [<span class="number">10</span>] .shstrtab         STRTAB           <span class="number">0000000000000000</span>  <span class="number">000002e8</span></span><br><span class="line">       <span class="number">0000000000000061</span>  <span class="number">0000000000000000</span>           <span class="number">0</span>     <span class="number">0</span>     <span class="number">1</span></span><br><span class="line">  [<span class="number">11</span>] .symtab           SYMTAB           <span class="number">0000000000000000</span>  <span class="number">000000e0</span></span><br><span class="line">       <span class="number">0000000000000180</span>  <span class="number">0000000000000018</span>          <span class="number">12</span>    <span class="number">12</span>     <span class="number">8</span></span><br><span class="line">  [<span class="number">12</span>] .strtab           STRTAB           <span class="number">0000000000000000</span>  <span class="number">00000260</span></span><br><span class="line">       <span class="number">000000000000003b</span>  <span class="number">0000000000000000</span>           <span class="number">0</span>     <span class="number">0</span>     <span class="number">1</span></span><br><span class="line">Key to Flags:</span><br><span class="line">  W (write), A (alloc), X (execute), M (merge), S (strings), l (large)</span><br><span class="line">  I (info), L (link order), G (group), T (TLS), E (exclude), x (unknown)</span><br><span class="line">  O (extra OS processing required) o (OS specific), p (processor specific)</span><br></pre></td></tr></table></figure>
+<h4 id="重定位表"><a href="#重定位表" class="headerlink" title="重定位表"></a>重定位表</h4><p>在上面例子中有个叫.rela.text的段。是一个<strong>重定位表</strong>。链接器在处理目标文件时，需要对目标文件中代码段和数据段中对绝对地址的引用的位置进行重新定位。这些需要重定位的信息就保存在重定位表里面。</p>
+<h4 id="字符串表"><a href="#字符串表" class="headerlink" title="字符串表"></a>字符串表</h4><p>ELF文件中用到了很多字符串，比如段名、变量名、函数名。因为字符串的长度是不固定的，所以用固定的结构表示比较困难。常见的做法是将字符串集中起来存放。然后用字符串在表中的偏移来引用字符串。<br>常见的段为.strtab和.shstrtab。分别为字符串表和段表字符串表。</p>
+<h3 id="链接的接口—符号"><a href="#链接的接口—符号" class="headerlink" title="链接的接口—符号"></a>链接的接口—符号</h3><p>目标文件中的符号大体分成以下几类</p>
+<ul>
+<li>定义在本目标文件中的全局符号，可以被其他目标文件引用。</li>
+<li>在本目标文件中引用的全局符号，却没有定义在本目标文件中。</li>
+<li>段名</li>
+<li>局部符号，只在编译单元内部可见。</li>
+<li>行号信息。</li>
+</ul>
+<p>链接过程关注的只有前面两类符号，也就是全局符号。</p>
+<h4 id="符号表结构体"><a href="#符号表结构体" class="headerlink" title="符号表结构体"></a>符号表结构体</h4><p>查看符号表的方法有下面三种。常用readelf -s<br>符号表段名一般叫.symtab 结构体为Elf32_Sym<br>常见的字段有</p>
+<ul>
+<li>符号类型和绑定信息</li>
+<li>符号所在的段</li>
+<li>符号值</li>
+</ul>
+<figure class="highlight tap"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line">zhangbobo@ubuntu:~/work/helloworld$ nm helloworld.o</span><br><span class="line">	0000000000000000 T main</span><br><span class="line">	                 U puts</span><br><span class="line">	0000000000000000 d val</span><br><span class="line">	0000000000000004 C val2</span><br><span class="line">	0000000000000008 C val22</span><br><span class="line">	0000000000000004 d val3.2289</span><br><span class="line">	0000000000000000 b val4.2290</span><br><span class="line">zhangbobo@ubuntu:~/work/helloworld$ readelf -s helloworld.o</span><br><span class="line">Symbol table '.symtab' contains<span class="number"> 16 </span>entries:</span><br><span class="line">   Num:    Value          Size Type    Bind   Vis      Ndx Name</span><br><span class="line">     0:<span class="number"> 0000000000000000 </span>   <span class="number"> 0 </span>NOTYPE  LOCAL  DEFAULT  UND </span><br><span class="line">     1:<span class="number"> 0000000000000000 </span>   <span class="number"> 0 </span>FILE    LOCAL  DEFAULT  ABS helloworld.c</span><br><span class="line">     2:<span class="number"> 0000000000000000 </span>   <span class="number"> 0 </span>SECTION LOCAL  DEFAULT   <span class="number"> 1 </span></span><br><span class="line">     3:<span class="number"> 0000000000000000 </span>   <span class="number"> 0 </span>SECTION LOCAL  DEFAULT   <span class="number"> 3 </span></span><br><span class="line">     4:<span class="number"> 0000000000000000 </span>   <span class="number"> 0 </span>SECTION LOCAL  DEFAULT   <span class="number"> 4 </span></span><br><span class="line">     5:<span class="number"> 0000000000000000 </span>   <span class="number"> 4 </span>OBJECT  LOCAL  DEFAULT   <span class="number"> 3 </span>val</span><br><span class="line">     6:<span class="number"> 0000000000000000 </span>   <span class="number"> 0 </span>SECTION LOCAL  DEFAULT   <span class="number"> 5 </span></span><br><span class="line">     7:<span class="number"> 0000000000000000 </span>   <span class="number"> 4 </span>OBJECT  LOCAL  DEFAULT   <span class="number"> 4 </span>val4.2290</span><br><span class="line">     8:<span class="number"> 0000000000000004 </span>   <span class="number"> 4 </span>OBJECT  LOCAL  DEFAULT   <span class="number"> 3 </span>val3.2289</span><br><span class="line">     9:<span class="number"> 0000000000000000 </span>   <span class="number"> 0 </span>SECTION LOCAL  DEFAULT   <span class="number"> 7 </span></span><br><span class="line">    10:<span class="number"> 0000000000000000 </span>   <span class="number"> 0 </span>SECTION LOCAL  DEFAULT   <span class="number"> 8 </span></span><br><span class="line">    11:<span class="number"> 0000000000000000 </span>   <span class="number"> 0 </span>SECTION LOCAL  DEFAULT   <span class="number"> 6 </span></span><br><span class="line">    12:<span class="number"> 0000000000000004 </span>   <span class="number"> 4 </span>OBJECT  GLOBAL DEFAULT  COM val2</span><br><span class="line">    13:<span class="number"> 0000000000000008 </span>   <span class="number"> 8 </span>OBJECT  GLOBAL DEFAULT  COM val22</span><br><span class="line">    14:<span class="number"> 0000000000000000 </span>  <span class="number"> 21 </span>FUNC    GLOBAL DEFAULT   <span class="number"> 1 </span>main</span><br><span class="line">    15:<span class="number"> 0000000000000000 </span>   <span class="number"> 0 </span>NOTYPE  GLOBAL DEFAULT  UND puts</span><br><span class="line">zhangbobo@ubuntu:~/work/helloworld$ readelf -s helloworld.o</span><br><span class="line">Symbol table '.symtab' contains<span class="number"> 16 </span>entries:</span><br><span class="line">   Num:    Value          Size Type    Bind   Vis      Ndx Name</span><br><span class="line">     0:<span class="number"> 0000000000000000 </span>   <span class="number"> 0 </span>NOTYPE  LOCAL  DEFAULT  UND </span><br><span class="line">     1:<span class="number"> 0000000000000000 </span>   <span class="number"> 0 </span>FILE    LOCAL  DEFAULT  ABS helloworld.c</span><br><span class="line">     2:<span class="number"> 0000000000000000 </span>   <span class="number"> 0 </span>SECTION LOCAL  DEFAULT   <span class="number"> 1 </span></span><br><span class="line">     3:<span class="number"> 0000000000000000 </span>   <span class="number"> 0 </span>SECTION LOCAL  DEFAULT   <span class="number"> 3 </span></span><br><span class="line">     4:<span class="number"> 0000000000000000 </span>   <span class="number"> 0 </span>SECTION LOCAL  DEFAULT   <span class="number"> 4 </span></span><br><span class="line">     5:<span class="number"> 0000000000000000 </span>   <span class="number"> 4 </span>OBJECT  LOCAL  DEFAULT   <span class="number"> 3 </span>val</span><br><span class="line">     6:<span class="number"> 0000000000000000 </span>   <span class="number"> 0 </span>SECTION LOCAL  DEFAULT   <span class="number"> 5 </span></span><br><span class="line">     7:<span class="number"> 0000000000000000 </span>   <span class="number"> 4 </span>OBJECT  LOCAL  DEFAULT   <span class="number"> 4 </span>val4.2290</span><br><span class="line">     8:<span class="number"> 0000000000000004 </span>   <span class="number"> 4 </span>OBJECT  LOCAL  DEFAULT   <span class="number"> 3 </span>val3.2289</span><br><span class="line">     9:<span class="number"> 0000000000000000 </span>   <span class="number"> 0 </span>SECTION LOCAL  DEFAULT   <span class="number"> 7 </span></span><br><span class="line">    10:<span class="number"> 0000000000000000 </span>   <span class="number"> 0 </span>SECTION LOCAL  DEFAULT   <span class="number"> 8 </span></span><br><span class="line">    11:<span class="number"> 0000000000000000 </span>   <span class="number"> 0 </span>SECTION LOCAL  DEFAULT   <span class="number"> 6 </span></span><br><span class="line">    12:<span class="number"> 0000000000000004 </span>   <span class="number"> 4 </span>OBJECT  GLOBAL DEFAULT  COM val2</span><br><span class="line">    13:<span class="number"> 0000000000000008 </span>   <span class="number"> 8 </span>OBJECT  GLOBAL DEFAULT  COM val22</span><br><span class="line">    14:<span class="number"> 0000000000000000 </span>  <span class="number"> 21 </span>FUNC    GLOBAL DEFAULT   <span class="number"> 1 </span>main</span><br><span class="line">    15:<span class="number"> 0000000000000000 </span>   <span class="number"> 0 </span>NOTYPE  GLOBAL DEFAULT  UND puts</span><br><span class="line">zhangbobo@ubuntu:~/work/helloworld$</span><br></pre></td></tr></table></figure>
+<h4 id="特殊符号"><a href="#特殊符号" class="headerlink" title="特殊符号"></a>特殊符号</h4><p>链接器在链接生成可执行文件时，会定义很多特殊符号。这些特殊符号也可以在代码中进行声明和引用。<br>常见的特殊符号有</p>
+<ul>
+<li>__executable_start 程序起始地址。</li>
+<li>__etext/_etext/etext 代码段结束地址</li>
+<li>_edata/edata 数据段结束地址</li>
+<li>_end/end 程序结束地址</li>
+</ul>
+<h4 id="符号修饰和函数签名"><a href="#符号修饰和函数签名" class="headerlink" title="符号修饰和函数签名"></a>符号修饰和函数签名</h4><p>为了防止代码中的符号名冲突，Unix下的C语言规定，经过编译后的符号名前面加下划线。<br>后来C++语言在设计的时候就考虑到这个问题，所以增加了名称空间（namespace）的方法。<br>现在Linux下C语言貌似已经去掉了加下划线这种方式。windows平台的C语言还是保持下划线这种传统。<br><strong>C++符号修饰</strong><br>为了支持C++中的重载等复杂特性。增加了<strong>符号修饰</strong>或者叫<strong>符号改编</strong>的机制。<br>编译后函数会依据一定的规则生成修饰后的函数名称。</p>
+<h4 id="extern-“C”"><a href="#extern-“C”" class="headerlink" title="extern “C”"></a>extern “C”</h4><p>由于C++的符号修饰机制C语言不支持，所以为了兼容C语言，会通过extern “C”关键字来通知编译器，将带有这个标志的代码当成C语言处理，符号修饰机制将不会起作用。<br>一种通行的兼容C语言的头文件写法为：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">ifdef</span> __cplusplus</span></span><br><span class="line"><span class="keyword">extern</span> <span class="string">"C"</span> &#123;</span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></span><br><span class="line">XXXXXX C语言的函数</span><br><span class="line"><span class="meta">#<span class="meta-keyword">ifdef</span> __cplusplus</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></span><br></pre></td></tr></table></figure>
+<h4 id="弱符号和强符号"><a href="#弱符号和强符号" class="headerlink" title="弱符号和强符号"></a>弱符号和强符号</h4><p>C/C++中，编译器默认函数和初始化的全局变量为强符号、未初始化的全局符号为弱符号。可以通过关键字”<strong>attribute</strong>((weak))”来定义。<br>针对强弱符号的概念。链接器的处理规则为：</p>
+<ul>
+<li>不允许强符号被多次定义。</li>
+<li>如果一个符号在目标文件中是强符号，在其他文件中是弱符号，那么选择强符号。</li>
+<li>如果一个符号在所有文件中都是弱符号，那么选择其中占用空间最大的那个。</li>
+</ul>
+<h4 id="弱引用和强引用"><a href="#弱引用和强引用" class="headerlink" title="弱引用和强引用"></a>弱引用和强引用</h4><p>对外部目标文件的符号引用在目标文件被编译成可执行文件时，必须要被正确决议。如果没有找到该符号的定义。链接器就会报符号未定义错误。<br>这种被称为强引用。<br>反之，还有一种弱引用。在处理时，如果该符号有定义，则引用，如果未定义则对于这个符号的引用不报错。<br>可以使用关键字“<strong>attribude</strong>((weakref))”来对一个外部函数声明为弱引用。<br>这种弱符号和和弱引用 对于库来说非常有用。比如库中定义的弱符号可以被用户定义的强符号覆盖。从而使程序可以使用自定义版本的库函数。或者程序可以对某些扩展功能的引用定义为弱引用。当将扩展模块与程序链接到一起的时候，功能模块就可以正常使用。当去掉某些功能模块时，程序也可以正常链接，只是缺少了相应的功能。这使得功能更加容易采集和组合。</p>
+<h3 id="调试信息"><a href="#调试信息" class="headerlink" title="调试信息"></a>调试信息</h3><p>gcc编译时，加上-g参数，编译器就会在目标文件中加上调试信息。这些调试信息都是以段的形式存放的。现在的ELF文件采用一种叫DWARF的标准调试信息格式。<br>因为调试信息占用相当大的空间，所以当开发完成需要将程序发布的时候，linux下可以使用strip命令去掉ELF文件中的调试信息。<br>可以参考下面的例子。debug版本的section比strip版本的要多7个section。<br><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">zhangbobo@ubuntu:~/work/helloworld$ readelf -S helloworld.o</span><br><span class="line">There are 36 section headers, starting at offset 0x1e00:</span><br><span class="line"></span><br><span class="line">Section Headers:</span><br><span class="line">  [Nr] Name             <span class="built_in"> Type </span>           <span class="built_in"> Address </span>          Offset</span><br><span class="line">       Size              EntSize          Flags  Link  <span class="builtin-name">Info</span>  Align</span><br><span class="line">  [ 0]                   <span class="literal">NULL</span>             0000000000000000  00000000</span><br><span class="line">       0000000000000000  0000000000000000           0     0     0</span><br><span class="line">  <span class="built_in">..</span><span class="built_in">..</span><span class="built_in">..</span><span class="built_in">..</span></span><br><span class="line">  [28] .debug_aranges    PROGBITS         0000000000000000  00001074</span><br><span class="line">       0000000000000030  0000000000000000           0     0     1</span><br><span class="line">  [29] .debug_info       PROGBITS         0000000000000000  000010a4</span><br><span class="line">       00000000000000ff  0000000000000000           0     0     1</span><br><span class="line">  [30] .debug_abbrev     PROGBITS         0000000000000000  000011a3</span><br><span class="line">       0000000000000075  0000000000000000           0     0     1</span><br><span class="line">  [31] .debug_line       PROGBITS         0000000000000000  00001218</span><br><span class="line">       0000000000000041  0000000000000000           0     0     1</span><br><span class="line">  [32] .debug_str        PROGBITS         0000000000000000  00001259</span><br><span class="line">       00000000000000e6  0000000000000001  MS       0     0     1</span><br><span class="line">zhangbobo@ubuntu:~/work/helloworld$ readelf -S helloworld.o</span><br><span class="line">There are 29 section headers, starting at offset 0x1170:</span><br><span class="line"></span><br><span class="line">Section Headers:</span><br><span class="line">  [Nr] Name             <span class="built_in"> Type </span>           <span class="built_in"> Address </span>          Offset</span><br><span class="line">       Size              EntSize          Flags  Link  <span class="builtin-name">Info</span>  Align</span><br><span class="line"><span class="built_in">..</span><span class="built_in">..</span><span class="built_in">..</span><span class="built_in">..</span>.</span><br><span class="line">       0000000000000018  0000000000000000  WA       0     0     8</span><br><span class="line">  [27] .comment          PROGBITS         0000000000000000  00001040</span><br><span class="line">       0000000000000034  0000000000000001  MS       0     0     1</span><br><span class="line">  [28] .shstrtab         STRTAB           0000000000000000  00001074</span><br><span class="line">       00000000000000fc  0000000000000000           0     0     1</span><br></pre></td></tr></table></figure></p>
+<h3 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h3><p>从这章了解到，无论是可执行文件还是库亦或目标文件，实际上都是基于段的文件或者这种文件的集合。另外编译器还会放一些辅助性的信息进去。</p>
+<p>（未完待续…）</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/github.io/tags/编译/" rel="tag"># 编译</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/github.io/2018/04/18/人月神话读书笔记/" rel="next" title="人月神话读书笔记">
+                <i class="fa fa-chevron-left"></i> 人月神话读书笔记
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/github.io/images/avatar.gif"
+                alt="张波波" />
+            
+              <p class="site-author-name" itemprop="name">张波波</p>
+              <p class="site-description motion-element" itemprop="description">欢迎,欢迎,随便冒个泡吧.</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/github.io/archives/">
+              
+                  <span class="site-state-item-count">7</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/github.io/categories/index.html">
+                  <span class="site-state-item-count">7</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/github.io/tags/index.html">
+                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/bob0305" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:zhangbo91@foxmail.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://www.zhihu.com/people/zhang-hao-hao-58" target="_blank" title="知乎">
+                      
+                        <i class="fa fa-fw fa-globe"></i>知乎</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://hexo.io/zh-cn/" title="Hexo" target="_blank">Hexo</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://theme-next.iissnan.com/" title="Next" target="_blank">Next</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#《程序员的自我修养—链接装载与库》读书笔记"><span class="nav-number">1.</span> <span class="nav-text">《程序员的自我修养—链接装载与库》读书笔记</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#第1章-温故知新"><span class="nav-number">1.1.</span> <span class="nav-text">第1章 温故知新</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#现代计算机的核心结构"><span class="nav-number">1.1.1.</span> <span class="nav-text">现代计算机的核心结构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#目前计算机现状"><span class="nav-number">1.1.2.</span> <span class="nav-text">目前计算机现状</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#操作系统"><span class="nav-number">1.1.3.</span> <span class="nav-text">操作系统</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#设备驱动"><span class="nav-number">1.1.4.</span> <span class="nav-text">设备驱动</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#虚拟地址-amp-分页"><span class="nav-number">1.1.5.</span> <span class="nav-text">虚拟地址&amp;分页</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#线程"><span class="nav-number">1.1.6.</span> <span class="nav-text">线程</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#线程安全"><span class="nav-number">1.1.6.1.</span> <span class="nav-text">线程安全</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#多线程模型"><span class="nav-number">1.1.6.2.</span> <span class="nav-text">多线程模型</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#写在本章最后"><span class="nav-number">1.1.7.</span> <span class="nav-text">写在本章最后</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#第2章-静态链接"><span class="nav-number">1.2.</span> <span class="nav-text">第2章 静态链接</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#被隐藏的过程"><span class="nav-number">1.2.1.</span> <span class="nav-text">被隐藏的过程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#链接"><span class="nav-number">1.2.2.</span> <span class="nav-text">链接</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#继续探究：编译器具体对代码文件做了什么"><span class="nav-number">1.2.3.</span> <span class="nav-text">继续探究：编译器具体对代码文件做了什么</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#词法分析"><span class="nav-number">1.2.3.1.</span> <span class="nav-text">词法分析</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#语法分析"><span class="nav-number">1.2.3.2.</span> <span class="nav-text">语法分析</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#语义分析"><span class="nav-number">1.2.3.3.</span> <span class="nav-text">语义分析</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#中间语言生成"><span class="nav-number">1.2.3.4.</span> <span class="nav-text">中间语言生成</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#目标代码生成与优化"><span class="nav-number">1.2.3.5.</span> <span class="nav-text">目标代码生成与优化</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#链接器"><span class="nav-number">1.2.4.</span> <span class="nav-text">链接器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#写在本章最后-1"><span class="nav-number">1.2.5.</span> <span class="nav-text">写在本章最后</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#第3章-目标文件里有什么"><span class="nav-number">1.3.</span> <span class="nav-text">第3章 目标文件里有什么</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#目标文件的格式"><span class="nav-number">1.3.1.</span> <span class="nav-text">目标文件的格式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#目标文件是什么样的"><span class="nav-number">1.3.2.</span> <span class="nav-text">目标文件是什么样的</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#继续挖掘目标文件中每个段作用"><span class="nav-number">1.3.3.</span> <span class="nav-text">继续挖掘目标文件中每个段作用</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#代码段"><span class="nav-number">1.3.3.1.</span> <span class="nav-text">代码段</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#数据段和只读数据段"><span class="nav-number">1.3.3.2.</span> <span class="nav-text">数据段和只读数据段</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#BSS段"><span class="nav-number">1.3.3.3.</span> <span class="nav-text">BSS段</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#其他常见段"><span class="nav-number">1.3.3.4.</span> <span class="nav-text">其他常见段</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ELF文件结构描述"><span class="nav-number">1.3.4.</span> <span class="nav-text">ELF文件结构描述</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#ELF文件头"><span class="nav-number">1.3.4.1.</span> <span class="nav-text">ELF文件头</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#段表"><span class="nav-number">1.3.4.2.</span> <span class="nav-text">段表</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#重定位表"><span class="nav-number">1.3.4.3.</span> <span class="nav-text">重定位表</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#字符串表"><span class="nav-number">1.3.4.4.</span> <span class="nav-text">字符串表</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#链接的接口—符号"><span class="nav-number">1.3.5.</span> <span class="nav-text">链接的接口—符号</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#符号表结构体"><span class="nav-number">1.3.5.1.</span> <span class="nav-text">符号表结构体</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#特殊符号"><span class="nav-number">1.3.5.2.</span> <span class="nav-text">特殊符号</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#符号修饰和函数签名"><span class="nav-number">1.3.5.3.</span> <span class="nav-text">符号修饰和函数签名</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#extern-“C”"><span class="nav-number">1.3.5.4.</span> <span class="nav-text">extern “C”</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#弱符号和强符号"><span class="nav-number">1.3.5.5.</span> <span class="nav-text">弱符号和强符号</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#弱引用和强引用"><span class="nav-number">1.3.5.6.</span> <span class="nav-text">弱引用和强引用</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#调试信息"><span class="nav-number">1.3.6.</span> <span class="nav-text">调试信息</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#小结"><span class="nav-number">1.3.7.</span> <span class="nav-text">小结</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">张波波</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+      <span class="post-meta-item-text">Site words total count&#58;</span>
+    
+    <span title="Site words total count">16.8k</span>
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/github.io/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/github.io/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/github.io/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/github.io/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/github.io/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/github.io/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/github.io/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/github.io/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/github.io/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/github.io/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/github.io/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/github.io/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/github.io/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

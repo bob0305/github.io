@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+  
+  
+    
+    
+  <script src="/github.io/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/github.io/lib/pace/pace-theme-minimal.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/github.io/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/github.io/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/github.io/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/github.io/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/github.io/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/github.io/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/github.io/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="如何查看可执行文件依赖的库这篇文章的主要目的是来总结通过哪些方法可以查看可执行文件的依赖的库。基本内容都是从网上找来的，其他验证工作纯手工截图。☺ ldd不管使用的是什么厂家的编译工具链，都会提供这个ldd命令。这个命令的功能和用法都非常简单，就是用来列出一个对象所依赖的所有动态库。  使用方法：ldd [option] filename 实例： 12345zhangbobo@ubuntu /u/">
+<meta property="og:type" content="article">
+<meta property="og:title" content="编译工具之ldd">
+<meta property="og:url" content="https://bob0305.github.io/github.io/2018/04/15/编译工具之ldd/index.html">
+<meta property="og:site_name" content="小池塘">
+<meta property="og:description" content="如何查看可执行文件依赖的库这篇文章的主要目的是来总结通过哪些方法可以查看可执行文件的依赖的库。基本内容都是从网上找来的，其他验证工作纯手工截图。☺ ldd不管使用的是什么厂家的编译工具链，都会提供这个ldd命令。这个命令的功能和用法都非常简单，就是用来列出一个对象所依赖的所有动态库。  使用方法：ldd [option] filename 实例： 12345zhangbobo@ubuntu /u/">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2018-04-15T15:42:11.442Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="编译工具之ldd">
+<meta name="twitter:description" content="如何查看可执行文件依赖的库这篇文章的主要目的是来总结通过哪些方法可以查看可执行文件的依赖的库。基本内容都是从网上找来的，其他验证工作纯手工截图。☺ ldd不管使用的是什么厂家的编译工具链，都会提供这个ldd命令。这个命令的功能和用法都非常简单，就是用来列出一个对象所依赖的所有动态库。  使用方法：ldd [option] filename 实例： 12345zhangbobo@ubuntu /u/">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/github.io/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":true,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://bob0305.github.io/github.io/2018/04/15/编译工具之ldd/"/>
+
+
+
+
+
+  <title>编译工具之ldd | 小池塘</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/github.io/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">小池塘</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">点滴之水，汇聚江河</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/github.io/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/github.io/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/github.io/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/github.io/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://bob0305.github.io/github.io/github.io/2018/04/15/编译工具之ldd/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="张波波">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/github.io/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="小池塘">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">编译工具之ldd</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-04-15T22:30:45+08:00">
+                2018-04-15
+              </time>
+            
+
+            
+              <span class="post-meta-divider">|</span>
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-check-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">更新于&#58;</span>
+              
+              <time title="更新于" itemprop="dateModified" datetime="2018-04-15T23:42:11+08:00">
+                2018-04-15
+              </time>
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/github.io/categories/编译工具/" itemprop="url" rel="index">
+                    <span itemprop="name">编译工具</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  597 字
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  3 分钟
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="如何查看可执行文件依赖的库"><a href="#如何查看可执行文件依赖的库" class="headerlink" title="如何查看可执行文件依赖的库"></a>如何查看可执行文件依赖的库</h1><p>这篇文章的主要目的是来总结通过哪些方法可以查看可执行文件的依赖的库。基本内容都是从网上找来的，其他验证工作纯手工截图。☺</p>
+<h2 id="ldd"><a href="#ldd" class="headerlink" title="ldd"></a>ldd</h2><p>不管使用的是什么厂家的编译工具链，都会提供这个ldd命令。这个命令的功能和用法都非常简单，就是用来列出一个对象所依赖的所有动态库。</p>
+<ol>
+<li>使用方法：<br><code>ldd [option] filename</code></li>
+<li><p>实例：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">zhangbobo@ubuntu /u/l/lib&gt; ldd libopus.so</span><br><span class="line">	linux-vdso.so<span class="number">.1</span> =&gt;  (<span class="number">0x00007ffecf5b1000</span>)</span><br><span class="line">	libm.so<span class="number">.6</span> =&gt; /lib/x86_64-linux-gnu/libm.so<span class="number">.6</span> (<span class="number">0x00007f03fb817000</span>)</span><br><span class="line">	libc.so<span class="number">.6</span> =&gt; /lib/x86_64-linux-gnu/libc.so<span class="number">.6</span> (<span class="number">0x00007f03fb44d000</span>)</span><br><span class="line">	/lib64/ld-linux-x86<span class="number">-64.</span>so<span class="number">.2</span> (<span class="number">0x00007f03fbd72000</span>)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>安全性：man ldd 手册中提到ldd命令会调用链接工具来获取依赖信息。在部分环境中可能会直接执行程序，因此，ldd命令理论上来说是不安全的。更安全的方法下面来介绍。</p>
+</li>
+</ol>
+<h2 id="objdump"><a href="#objdump" class="headerlink" title="objdump"></a>objdump</h2><p><code>objdump -p /path/to/program | grep NEEDED</code><br>使用这个命令同样可以获取到库的依赖信息。比ldd更安全。<br>实例：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">zhangbobo@ubuntu /u/l/lib&gt; objdump -p libopus.so | grep NEEDED</span><br><span class="line">  NEEDED               libm.so<span class="number">.6</span></span><br><span class="line">  NEEDED               libc.so<span class="number">.6</span></span><br></pre></td></tr></table></figure></p>
+<p>这个命令很好理解，objdump也是用来分析目标文件的的工具。上面的命令其实就是匹配分析结果中具有NEEDED字样的行。NEEDED 字样所在的行代表的就是动态库的名字。</p>
+<p>那么除了以上方法，还有没有其他方式呢？答案是肯定的。</p>
+<h2 id="pldd"><a href="#pldd" class="headerlink" title="pldd"></a>pldd</h2><p>pldd作用稍稍有些不同，它可以列出一个运行中的进程载入的共享库。需要root权限。<br>（验证时电脑卡死，没有列实例）</p>
+<h2 id="pmap"><a href="#pmap" class="headerlink" title="pmap"></a>pmap</h2><p>pmap作用是报告一个运行中进程的内存映射，也能够显示出进程的库文件依赖信息。<br>实例：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">zhangbobo@ubuntu:~/blog$ sudo pmap <span class="number">2996</span></span><br><span class="line"><span class="number">2996</span>:   bash</span><br><span class="line"><span class="number">0000000000400000</span>    <span class="number">976</span>K r-x-- bash</span><br><span class="line"><span class="number">00000000006f</span>3000      <span class="number">4</span>K r---- bash</span><br><span class="line"><span class="number">00000000006f</span>4000     <span class="number">36</span>K rw--- bash</span><br><span class="line"><span class="number">00000000006f</span>d000     <span class="number">24</span>K rw---   [ anon ]</span><br><span class="line"><span class="number">00000000017f</span>b000   <span class="number">2212</span>K rw---   [ anon ]</span><br><span class="line"><span class="number">00007f</span>4463d6b000     <span class="number">44</span>K r-x-- libnss_files<span class="number">-2.23</span>.so</span><br><span class="line"><span class="number">00007f</span>4463d76000   <span class="number">2044</span>K ----- libnss_files<span class="number">-2.23</span>.so</span><br><span class="line">....省略部分内容....</span><br></pre></td></tr></table></figure></p>
+<h2 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h2><p>arm上面的的工具可以尝试下面命令：（未做验证）<br><code>arm-linux-gnueabinf-readelf -d example.so</code></p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><blockquote>
+<p><a href="https://www.linuxidc.com/Linux/2014-08/105571.htm" target="_blank" rel="noopener">https://www.linuxidc.com/Linux/2014-08/105571.htm</a><br><a href="https://blog.csdn.net/pltuyuhong/article/details/39064699" target="_blank" rel="noopener">https://blog.csdn.net/pltuyuhong/article/details/39064699</a><br><a href="https://www.cnblogs.com/lijunamneg/p/3806767.html" target="_blank" rel="noopener">https://www.cnblogs.com/lijunamneg/p/3806767.html</a></p>
+</blockquote>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/github.io/2018/04/10/调试工具之addr2line/" rel="next" title="调试工具之addr2line">
+                <i class="fa fa-chevron-left"></i> 调试工具之addr2line
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/github.io/2018/04/18/人月神话读书笔记/" rel="prev" title="人月神话读书笔记">
+                人月神话读书笔记 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/github.io/images/avatar.gif"
+                alt="张波波" />
+            
+              <p class="site-author-name" itemprop="name">张波波</p>
+              <p class="site-description motion-element" itemprop="description">欢迎,欢迎,随便冒个泡吧.</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/github.io/archives/">
+              
+                  <span class="site-state-item-count">7</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/github.io/categories/index.html">
+                  <span class="site-state-item-count">7</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/github.io/tags/index.html">
+                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/bob0305" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:zhangbo91@foxmail.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://www.zhihu.com/people/zhang-hao-hao-58" target="_blank" title="知乎">
+                      
+                        <i class="fa fa-fw fa-globe"></i>知乎</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://hexo.io/zh-cn/" title="Hexo" target="_blank">Hexo</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://theme-next.iissnan.com/" title="Next" target="_blank">Next</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#如何查看可执行文件依赖的库"><span class="nav-number">1.</span> <span class="nav-text">如何查看可执行文件依赖的库</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#ldd"><span class="nav-number">1.1.</span> <span class="nav-text">ldd</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#objdump"><span class="nav-number">1.2.</span> <span class="nav-text">objdump</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#pldd"><span class="nav-number">1.3.</span> <span class="nav-text">pldd</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#pmap"><span class="nav-number">1.4.</span> <span class="nav-text">pmap</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#其他"><span class="nav-number">1.5.</span> <span class="nav-text">其他</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考"><span class="nav-number">1.6.</span> <span class="nav-text">参考</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">张波波</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+      <span class="post-meta-item-text">Site words total count&#58;</span>
+    
+    <span title="Site words total count">16.8k</span>
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/github.io/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/github.io/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/github.io/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/github.io/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/github.io/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/github.io/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/github.io/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/github.io/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/github.io/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/github.io/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/github.io/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/github.io/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/github.io/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
